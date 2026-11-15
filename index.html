@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f1eee6">
+  <meta name="description" content="沪深市场资金温度：沪深300ETF占比、融资余额与股债利差跟踪">
+  <title>资金温度 · 沪深市场观察</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2311191e'/%3E%3Cpath d='M16 42V28M28 42V18M40 42V31M52 42V23' stroke='%23fff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-noise" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#overview" aria-label="返回顶部">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="brand-copy"><b>MARKET COMPASS</b><small>沪深市场观察</small></span>
+    </a>
+    <nav class="site-nav" aria-label="页面导航">
+      <a href="#capital">资金集中度</a>
+      <a href="#leverage">两融杠杆</a>
+      <a href="#valuation">股债利差</a>
+    </nav>
+    <div class="header-status">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span>数据已更新</span>
+      <time id="generatedAt">2026.11.15</time>
+    </div>
+  </header>
+
+  <main class="dashboard" id="overview">
+    <section class="hero" aria-labelledby="pageTitle">
+      <div class="hero-copy">
+        <p class="eyebrow"><span>CHINA A-SHARE</span><i></i><span>MARKET TEMPERATURE</span></p>
+        <h1 id="pageTitle">看见资金的<br><em>温度与方向</em></h1>
+        <p class="hero-lead">把沪深300ETF配置、两融杠杆与股债性价比放在同一张图上，观察资金正在变热，还是正在退潮。</p>
+        <div class="hero-pills" aria-label="数据覆盖范围">
+          <span><b id="etfDays">754</b> 个交易日</span>
+          <span><b>4</b> 只头部ETF</span>
+          <span><b id="erpPoints">516</b> 个周频样本</span>
+        </div>
+      </div>
+
+      <aside class="snapshot-card" aria-labelledby="snapshotTitle">
+        <div class="snapshot-head">
+          <span class="snapshot-kicker">MARKET SNAPSHOT</span>
+          <span class="snapshot-badge">数据速览</span>
+        </div>
+        <h2 id="snapshotTitle">资金侧降温，估值仍处偏高分位</h2>
+        <p id="snapshotText">ETF配置低于近三年均值，融资余额较近期高位回落；股债利差位于历史偏高分位。</p>
+        <div class="snapshot-list">
+          <div class="snapshot-item">
+            <span class="item-index">01</span>
+            <div><span>ETF 配置</span><b id="snapEtf">较区间均值低 0.55pp</b></div>
+          </div>
+          <div class="snapshot-item">
+            <span class="item-index">02</span>
+            <div><span>融资余额</span><b id="snapMargin">近 20 日减少 2,003.65 亿</b></div>
+          </div>
+          <div class="snapshot-item">
+            <span class="item-index">03</span>
+            <div><span>股债利差</span><b id="snapErp">处于近十年 73.6% 分位</b></div>
+          </div>
+        </div>
+        <p class="snapshot-note">以上仅为数据位置描述，不构成投资建议。</p>
+      </aside>
+    </section>
+
+    <section class="kpi-grid" aria-label="四项核心指标">
+      <article class="kpi-card accent-red">
+        <div class="kpi-head"><span>ETF 配置强度</span><span class="kpi-code">01 / FLOW</span></div>
+        <div class="kpi-value"><strong id="kpiEtf">0.86</strong><span>%</span></div>
+        <div class="kpi-detail"><span class="change neutral" id="etfChange">— 0.00pp</span><span>沪深300ETF 占流通市值</span></div>
+        <div class="sparkline" id="sparkEtf" aria-label="沪深300ETF占比走势"></div>
+        <div class="kpi-foot"><span id="etfFoot">合计市值 4,123 亿</span><time id="etfDate">2026.11.13</time></div>
+      </article>
+
+      <article class="kpi-card accent-ink">
+        <div class="kpi-head"><span>融资余额</span><span class="kpi-code">02 / LEVERAGE</span></div>
+        <div class="kpi-value"><strong id="kpiMargin">2.27</strong><span>万亿</span></div>
+        <div class="kpi-detail"><span class="change negative" id="marginChange">+6.94 亿</span><span>全市场融资余额</span></div>
+        <div class="sparkline" id="sparkMargin" aria-label="全市场融资余额走势"></div>
+        <div class="kpi-foot"><span id="marginFoot">两融合计 23,029 亿</span><time id="marginDate">2026.11.12</time></div>
+      </article>
+
+      <article class="kpi-card accent-blue">
+        <div class="kpi-head"><span>杠杆水位</span><span class="kpi-code">03 / RATIO</span></div>
+        <div class="kpi-value"><strong id="kpiLeverage">2.52</strong><span>%</span></div>
+        <div class="kpi-detail"><span class="change flat" id="leverageChange">流通市值占比</span><span>融资余额 / 全A流通市值</span></div>
+        <div class="sparkline" id="sparkLeverage" aria-label="融资余额占流通市值走势"></div>
+        <div class="kpi-foot"><span id="leverageFoot">全A流通市值 90.26 万亿</span><time id="leverageDate">2026.11.12</time></div>
+      </article>
+
+      <article class="kpi-card accent-amber">
+        <div class="kpi-head"><span>股债利差</span><span class="kpi-code">04 / VALUE</span></div>
+        <div class="kpi-value"><strong id="kpiErp">5.84</strong><span>%</span></div>
+        <div class="kpi-detail"><span class="change positive" id="erpChange">高于均线 0.16σ</span><span>沪深300 ERP</span></div>
+        <div class="sparkline" id="sparkErp" aria-label="股债利差走势"></div>
+        <div class="kpi-foot"><span id="erpFoot">PE 13.42x · 10Y 1.61%</span><time id="erpDate">2026.11.13</time></div>
+      </article>
+    </section>
+
+    <section class="chart-section chart-wide" id="capital" aria-labelledby="capitalTitle">
+      <div class="section-head">
+        <div>
+          <p class="section-kicker"><span>01</span> CAPITAL CONCENTRATION</p>
+          <h2 id="capitalTitle">头部沪深300ETF，正在承接多少资金？</h2>
+          <p>四只头部 ETF 场内市值合计 ÷ 沪深300成分股流通市值</p>
+        </div>
+        <div class="range-control" id="etfRange" role="group" aria-label="ETF图表时间范围">
+          <button type="button" data-points="0" class="active">全部</button>
+          <button type="button" data-points="244">1年</button>
+          <button type="button" data-points="122">半年</button>
+        </div>
+      </div>
+      <div class="metric-ribbon">
+        <div><span>当前占比</span><b id="etfCurrent">0.86%</b></div>
+        <div><span>区间均值</span><b id="etfAverage">1.41%</b></div>
+        <div><span>区间高点</span><b id="etfHigh">2.20%</b></div>
+        <div><span>跟踪ETF</span><b>4 只</b></div>
+      </div>
+      <div class="chart-frame">
+        <div class="chart" id="chartEtf" role="img" aria-label="头部沪深300ETF市值占流通市值与沪深300指数走势"></div>
+      </div>
+      <div class="chart-foot">
+        <p id="etfFootnote">区间 2023-09-28 至 2026-11-13，占比为估算值，重点观察趋势与方向。</p>
+        <span class="data-label">估算口径</span>
+      </div>
+    </section>
+
+    <div class="dual-grid">
+      <section class="chart-section" id="leverage" aria-labelledby="marginTitle">
+        <div class="section-head compact">
+          <div>
+            <p class="section-kicker"><span>02</span> MARGIN BALANCE</p>
+            <h2 id="marginTitle">两融杠杆水位</h2>
+            <p>融资余额、融券余额与流通市值占比</p>
+          </div>
+          <div class="range-control" id="marginRange" role="group" aria-label="两融图表时间范围">
+            <button type="button" data-points="0">全部</button>
+            <button type="button" data-points="1215">5年</button>
+            <button type="button" data-points="730">3年</button>
+            <button type="button" data-points="244" class="active">1年</button>
+          </div>
+        </div>
+        <div class="metric-ribbon compact">
+          <div><span>融资余额</span><b id="marginCurrent">2.27 万亿</b></div>
+          <div><span>杠杆水位</span><b id="marginRatio">2.52%</b></div>
+          <div><span>近20日变化</span><b class="down" id="margin20">−2,003.65 亿</b></div>
+        </div>
+        <div class="chart-frame">
+          <div class="chart chart-compact" id="chartMargin" role="img" aria-label="全市场融资融券余额走势"></div>
+        </div>
+        <div class="chart-foot">
+          <p id="marginFootnote">交易所 T+1 披露，通常比行情晚 1 个交易日。</p>
+          <span class="data-label">T+1</span>
+        </div>
+      </section>
+
+      <section class="chart-section" id="valuation" aria-labelledby="erpTitle">
+        <div class="section-head compact">
+          <div>
+            <p class="section-kicker"><span>03</span> EQUITY BOND SPREAD</p>
+            <h2 id="erpTitle">股债性价比</h2>
+            <p>沪深300股债利差与 2.5 年滚动区间</p>
+          </div>
+          <div class="range-control" id="erpRange" role="group" aria-label="股债利差图表时间范围">
+            <button type="button" data-points="516" class="active">10年</button>
+            <button type="button" data-points="260">5年</button>
+            <button type="button" data-points="156">3年</button>
+          </div>
+        </div>
+        <div class="metric-ribbon compact">
+          <div><span>当前利差</span><b id="erpCurrent">5.84%</b></div>
+          <div><span>历史分位</span><b id="erpPercentile">73.6%</b></div>
+          <div><span>偏离均线</span><b id="erpZ">+0.16σ</b></div>
+        </div>
+        <div class="chart-frame">
+          <div class="chart chart-compact" id="chartErp" role="img" aria-label="沪深300股债利差与均线和标准差区间"></div>
+        </div>
+        <div class="chart-foot">
+          <p id="erpFootnote">利差越高，股票相对债券越便宜；区间为滚动 ±2σ。</p>
+          <span class="data-label">周频</span>
+        </div>
+      </section>
+    </div>
+
+    <section class="method-section" aria-labelledby="methodTitle">
+      <div class="method-intro">
+        <p class="section-kicker"><span>04</span> METHODOLOGY</p>
+        <h2 id="methodTitle">口径与说明</h2>
+        <p>所有指标均使用页面生成时保存的数据快照。悬停图表可查看逐点明细，切换时间范围可聚焦不同周期。</p>
+      </div>
+      <div class="method-list" id="methodList"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>MARKET COMPASS · 沪深市场观察</span>
+    <span id="footerUpdate">数据快照 2026-11-15 23:54</span>
+    <span>仅供个人数据跟踪，不构成投资建议</span>
+  </footer>
+
+  <script src="./data.js"></script>
+  <script src="./assets/echarts.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,13 @@
+{
+  "name": "market-compass-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "沪深市场资金温度自动更新看板",
+  "scripts": {
+    "update": "node scripts/update-data.js",
+    "serve": "node scripts/serve.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
