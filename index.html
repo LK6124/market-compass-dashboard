@@ -120,7 +120,11 @@
         <div><span>区间高点</span><b id="etfHigh">2.20%</b></div>
         <div><span>跟踪ETF</span><b>4 只</b></div>
       </div>
-      <div class="chart-frame">
+            <div class="chart-legend" aria-label="ETF图例">
+        <span class="legend-item"><i class="legend-line legend-etf"></i>四只ETF占比</span>
+        <span class="legend-item"><i class="legend-line legend-dashed legend-index"></i>沪深300<em class="legend-axis">右轴</em></span>
+      </div>
+<div class="chart-frame">
         <div class="chart" id="chartEtf" role="img" aria-label="头部沪深300ETF市值占流通市值与沪深300指数走势"></div>
       </div>
       <div class="chart-foot">
@@ -149,7 +153,13 @@
           <div><span>杠杆水位</span><b id="marginRatio">2.52%</b></div>
           <div><span>近20日变化</span><b class="down" id="margin20">−2,003.65 亿</b></div>
         </div>
-        <div class="chart-frame">
+                <div class="chart-legend" aria-label="两融图图例">
+          <span class="legend-item"><i class="legend-line legend-financing"></i>融资余额</span>
+          <span class="legend-item"><i class="legend-line legend-lending"></i>融券余额</span>
+          <span class="legend-item"><i class="legend-line legend-dashed legend-leverage"></i>融资余额占流通市值<em class="legend-axis">右轴</em></span>
+          <span class="legend-item"><i class="legend-line legend-dashed legend-index"></i>沪深300<em class="legend-axis">右轴</em></span>
+        </div>
+<div class="chart-frame">
           <div class="chart chart-compact" id="chartMargin" role="img" aria-label="全市场融资融券余额走势"></div>
         </div>
         <div class="chart-foot">
@@ -176,7 +186,13 @@
           <div><span>历史分位</span><b id="erpPercentile">73.6%</b></div>
           <div><span>偏离均线</span><b id="erpZ">+0.16σ</b></div>
         </div>
-        <div class="chart-frame">
+                <div class="chart-legend" aria-label="股债利差图图例">
+          <span class="legend-item"><i class="legend-line legend-erp"></i>股债利差</span>
+          <span class="legend-item"><i class="legend-line legend-dashed legend-ma"></i>2.5年均线</span>
+          <span class="legend-item"><i class="legend-band"></i>±2σ 区间</span>
+          <span class="legend-item"><i class="legend-line legend-dashed legend-index"></i>沪深300<em class="legend-axis">右轴</em></span>
+        </div>
+<div class="chart-frame">
           <div class="chart chart-compact" id="chartErp" role="img" aria-label="沪深300股债利差与均线和标准差区间"></div>
         </div>
         <div class="chart-foot">
