@@ -322,6 +322,29 @@ button { font: inherit; }
 .metric-ribbon.compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .metric-ribbon.compact > div { padding: 10px 11px; }
 .metric-ribbon.compact b { font-size: 12.5px; }
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 11px 0 4px;
+  color: var(--ink-soft);
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+.legend-item { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.legend-line { position: relative; display: inline-block; flex: 0 0 22px; width: 22px; height: 8px; }
+.legend-line::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; border-radius: 2px; background: var(--legend-color); transform: translateY(-50%); }
+.legend-line.legend-dashed::before { height: 0; border-top: 1.5px dashed var(--legend-color); background: transparent; }
+.legend-line.legend-etf { --legend-color: var(--red); }
+.legend-line.legend-financing { --legend-color: var(--ink); }
+.legend-line.legend-lending { --legend-color: var(--amber); }
+.legend-line.legend-leverage { --legend-color: var(--blue); }
+.legend-line.legend-erp { --legend-color: var(--amber); }
+.legend-line.legend-ma { --legend-color: var(--blue); }
+.legend-line.legend-index { --legend-color: #929b9e; }
+.legend-band { display: inline-block; flex: 0 0 20px; width: 20px; height: 10px; border: 1px solid rgba(184, 131, 47, .25); border-radius: 2px; background: rgba(184, 131, 47, .16); }
+.legend-axis { padding: 1px 4px; border: 1px solid var(--line); border-radius: 3px; color: var(--muted); font-size: 8.5px; font-style: normal; line-height: 1.25; }
 .chart-frame { width: 100%; padding-top: 7px; }
 .chart { width: 100%; height: 390px; }
 .chart-compact { height: 345px; }
@@ -387,6 +410,7 @@ button { font: inherit; }
   .metric-ribbon > div:nth-child(2) { border-right: 0; }
   .metric-ribbon > div:nth-child(-n+2) { border-bottom: 1px solid var(--line-soft); }
   .metric-ribbon > div:first-child { padding-left: 11px; }
+  .chart-legend { gap: 8px 13px; font-size: 10px; }
   .chart { height: 340px; }
   .chart-compact { height: 320px; }
   .method-section { grid-template-columns: 1fr; gap: 26px; padding: 30px 25px; }
@@ -418,6 +442,8 @@ button { font: inherit; }
   .sparkline { height: 50px; }
   .section-head.compact .range-control { width: 100%; }
   .range-control button { flex: 1; }
+  .chart-legend { gap: 7px 11px; padding-top: 10px; font-size: 9.5px; }
+  .legend-line { flex-basis: 19px; width: 19px; }
   .chart { height: 310px; }
   .chart-compact { height: 300px; }
   .chart-foot { gap: 10px; }
