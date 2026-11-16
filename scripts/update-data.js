@@ -146,8 +146,54 @@ async function fetchMarginRows() {
     total: row.RZRQYE / 100000000,
     ltsz: row.LTSZ / 100000000,
     rzyezb: Number(row.RZYEZB),
-    rz_chg: row.RZJME / 100000000
+    rz_chg: row.RZJME / 100000000,
+    csi: Number(row.NEW)
   }));
+}
+
+async function fetchMarginCsiHistory() {
+  const base = 'https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPTA_RZRQ_LSHJ&columns=DIM_DATE%2CNEW&source=WEB&client=WEB&pageSize=800&sortColumns=DIM_DATE&sortTypes=-1';
+  const first = await fetchJson(base + '&pageNumber=1', { headers: { referer: 'https://data.eastmoney.com/' } });
+  if (!first.success || !first.result || !Array.isArray(first.result.data)) {
+    throw new Error('沪深300历史行情接口异常');
+  }
+  const pages = Math.ceil(first.result.count / first.result.data.length);
+  const rest = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, index) =>
+    fetchJson(base + '&pageNumber=' + (index + 2), { headers: { referer: 'https://data.eastmoney.com/' } })
+  ));
+  const rows = first.result.data.concat(...rest.map((payload) => payload.result.data));
+  return new Map(rows.map((row) => [row.DIM_DATE.slice(0, 10), Number(row.NEW)]));
+}
+
+function previousValue(map, date) {
+  if (map.has(date)) return map.get(date);
+  let candidate = null;
+  for (const [key, value] of map) {
+    if (key <= date && (!candidate || key > candidate[0])) candidate = [key, value];
+  }
+  return candidate ? candidate[1] : null;
+}
+
+async function ensureCsiHistory(data) {
+  const margin = data.margin.series;
+  const needsMargins = !Array.isArray(margin.csi_close) || margin.csi_close.length !== margin.dates.length;
+  const erp = data.erp.series;
+  const needsErp = !Array.isArray(erp.csi_close) || erp.csi_close.length !== erp.dates.length;
+  if (!needsMargins && !needsErp) return;
+
+  const history = await fetchMarginCsiHistory();
+  const values = margin.dates.map((date) => {
+    const value = history.get(date);
+    return Number.isFinite(value) ? round(value, 4) : null;
+  });
+  const coverage = values.filter(Number.isFinite).length / values.length;
+  if (coverage < 0.98) throw new Error('沪深300历史行情覆盖率不足：' + (coverage * 100).toFixed(1) + '%');
+  margin.csi_close = values;
+
+  erp.csi_close = erp.dates.map((date) => {
+    const value = previousValue(history, date);
+    return Number.isFinite(value) ? round(value, 4) : null;
+  });
 }
 
 async function fetchValuationSnapshot() {
@@ -247,7 +293,7 @@ function updateMargin(data, rows) {
   const series = data.margin.series;
   for (const row of rows.slice().reverse()) {
     upsertPoint(series, row.date, {
-      rz: round(row.rz, 4), rq: round(row.rq, 4), total: round(row.total, 4), rzyezb: round(row.rzyezb, 4)
+      rz: round(row.rz, 4), rq: round(row.rq, 4), total: round(row.total, 4), rzyezb: round(row.rzyezb, 4), csi_close: round(row.csi, 4)
     });
   }
 
@@ -255,6 +301,7 @@ function updateMargin(data, rows) {
   const previous = rows[1];
   const twentyDaysAgo = rows[20];
   assertFinite(latest.rz, '融资余额', 100, 100000);
+  assertFinite(latest.csi, '沪深300点位', 100, 20000);
   assertFinite(latest.rzyezb, '融资余额占比', 0.1, 20);
   data.margin.latest = {
     date: latest.date,
@@ -278,7 +325,7 @@ function updateMargin(data, rows) {
   };
 }
 
-function updateErp(data, valuation, fallbackDate) {
+function updateErp(data, valuation, fallbackDate, csiClose) {
   const date = valuation.peDate === valuation.y10Date ? valuation.peDate : fallbackDate;
   if (valuation.peDate !== valuation.y10Date) {
     console.warn(`估值日期不一致：PE ${valuation.peDate}，10Y ${valuation.y10Date}，使用交易日 ${date}`);
@@ -296,11 +343,13 @@ function updateErp(data, valuation, fallbackDate) {
       series.erp[targetIndex] = erp;
       series.pe[targetIndex] = valuation.pe;
       series.y10[targetIndex] = valuation.y10;
+      series.csi_close[targetIndex] = round(csiClose, 4);
     } else {
       series.dates.push(date);
       series.erp.push(erp);
       series.pe.push(valuation.pe);
       series.y10.push(valuation.y10);
+      series.csi_close.push(round(csiClose, 4));
       targetIndex = series.dates.length - 1;
     }
   } else {
@@ -309,6 +358,7 @@ function updateErp(data, valuation, fallbackDate) {
     series.erp[targetIndex] = erp;
     series.pe[targetIndex] = valuation.pe;
     series.y10[targetIndex] = valuation.y10;
+    series.csi_close[targetIndex] = round(csiClose, 4);
   }
 
   const rolling = series.erp.slice(Math.max(0, targetIndex - 129), targetIndex + 1);
@@ -355,9 +405,10 @@ async function main() {
     fetchValuationSnapshot()
   ]);
 
+  await ensureCsiHistory(data);
   updateEtf(data, market);
   updateMargin(data, marginRows);
-  updateErp(data, valuation, market.csi.date);
+  updateErp(data, valuation, market.csi.date, market.csi.price);
   data.generated = shanghaiTimestamp();
   writeData(data);
 

@@ -330,7 +330,8 @@
       '<div style="display:flex;justify-content:space-between;gap:24px"><span style="color:rgba(246,242,233,.6)">融资余额</span><b>' + number(S.rz[index], 2) + ' 亿</b></div>' +
       '<div style="display:flex;justify-content:space-between;gap:24px"><span style="color:rgba(246,242,233,.6)">当日变化</span><span style="color:' + (diff >= 0 ? '#f58a73' : '#7ddab5') + '">' + signed(diff, 2) + ' 亿</span></div>' +
       '<div style="display:flex;justify-content:space-between;gap:24px"><span style="color:rgba(246,242,233,.6)">融券余额</span><span>' + number(S.rq[index], 2) + ' 亿</span></div>' +
-      '<div style="display:flex;justify-content:space-between;gap:24px;margin-top:4px;padding-top:5px;border-top:1px solid rgba(255,255,255,.1)"><span style="color:rgba(246,242,233,.6)">占流通市值</span><b>' + number(S.ratio[index], 2) + '%</b></div>';
+      '<div style="display:flex;justify-content:space-between;gap:24px"><span style="color:rgba(246,242,233,.6)">占流通市值</span><b>' + number(S.ratio[index], 2) + '%</b></div>' +
+      '<div style="display:flex;justify-content:space-between;gap:24px;margin-top:4px;padding-top:5px;border-top:1px solid rgba(255,255,255,.1)"><span style="color:rgba(246,242,233,.6)">沪深300</span><b>' + number(S.csi[index], 2) + '</b></div>';
   }
 
   function renderMargin(count) {
@@ -339,18 +340,20 @@
     var rz = tail(S.rz, count);
     var rq = tail(S.rq, count);
     var ratio = tail(S.rzyezb, count);
-    window.__chartSlices.margin = { rz: rz, rq: rq, ratio: ratio };
+    var csi = tail(S.csi_close, count);
+    window.__chartSlices.margin = { rz: rz, rq: rq, ratio: ratio, csi: csi };
 
     charts.margin.setOption({
       animationDuration: 650,
       animationEasing: 'cubicOut',
       grid: { left: isMobile() ? 7 : 10, right: isMobile() ? 5 : 8, top: 42, bottom: 35, containLabel: true },
       tooltip: Object.assign(tooltipStyle(), { formatter: marginTooltip }),
-      legend: legendStyle(['融资余额', '融券余额', '占流通市值（右轴）']),
+      legend: legendStyle(['融资余额', '融券余额', '占流通市值（右轴）', '沪深300（右轴）']),
       xAxis: categoryAxis(dates),
       yAxis: [
         valueAxis('余额（万亿）', function (value) { return value === 0 ? '0' : (value / 10000).toFixed(1); }),
-        valueAxis('占比 %', function (value) { return Number(value).toFixed(1); }, { splitLine: { show: false } })
+        valueAxis('占比 %', function (value) { return Number(value).toFixed(1); }, { position: 'right', show: !isMobile(), splitLine: { show: false } }),
+        valueAxis('沪深300', function (value) { return Math.round(value); }, { position: 'right', offset: isMobile() ? 0 : 46, splitLine: { show: false } })
       ],
       dataZoom: zoomInside(true),
       series: [
@@ -391,6 +394,18 @@
           lineStyle: { width: 1.45, color: COLORS.blue, type: 'dashed' },
           itemStyle: { color: COLORS.blue },
           z: 2
+        },
+        {
+          name: '沪深300（右轴）',
+          type: 'line',
+          yAxisIndex: 2,
+          data: csi,
+          showSymbol: false,
+          smooth: 0.12,
+          lineStyle: { width: 1.35, color: '#929b9e', type: 'dashed', opacity: 0.9 },
+          itemStyle: { color: '#929b9e' },
+          emphasis: { focus: 'series' },
+          z: 3
         }
       ]
     }, true);
@@ -400,7 +415,7 @@
     setText('marginRatio', number(M.rzyezb, 2) + '%');
     setText('margin20', (M.rz_chg20 >= 0 ? '+' : '−') + number(Math.abs(M.rz_chg20), 2) + ' 亿');
     setClass('margin20', M.rz_chg20 >= 0 ? 'up' : 'down');
-    setText('marginFootnote', '最新 ' + M.date + '（T+1 披露）；区间峰值 ' + number(D.margin.range.max.rz, 0) + ' 亿，出现于 ' + dateDot(D.margin.range.max.date) + '。');
+    setText('marginFootnote', '最新 ' + M.date + '（T+1 披露）；区间峰值 ' + number(D.margin.range.max.rz, 0) + ' 亿，出现于 ' + dateDot(D.margin.range.max.date) + '。沪深300采用右侧独立坐标轴。');
   }
 
   function erpTooltip(params) {
@@ -412,6 +427,7 @@
       '<div style="display:flex;justify-content:space-between;gap:25px"><span style="color:rgba(246,242,233,.6)">股债利差</span><b style="color:#f0b85e">' + number(S.erp[index], 2) + '%</b></div>' +
       '<div style="display:flex;justify-content:space-between;gap:25px"><span style="color:rgba(246,242,233,.6)">2.5年均线</span><span>' + number(S.ma[index], 2) + '%</span></div>' +
       '<div style="display:flex;justify-content:space-between;gap:25px"><span style="color:rgba(246,242,233,.6)">偏离均线</span><span>' + (z === null ? '—' : signed(z, 2) + 'σ') + '</span></div>' +
+      '<div style="display:flex;justify-content:space-between;gap:25px"><span style="color:rgba(246,242,233,.6)">沪深300</span><b>' + number(S.csi[index], 2) + '</b></div>' +
       '<div style="margin-top:4px;padding-top:5px;border-top:1px solid rgba(255,255,255,.1);color:rgba(246,242,233,.56);font-size:10px">PE(TTM) ' + number(S.pe[index], 2) + ' · 10Y国债 ' + number(S.y10[index], 2) + '%</div>';
   }
 
@@ -424,19 +440,23 @@
     var lower = tail(S.lower, count);
     var pe = tail(S.pe, count);
     var y10 = tail(S.y10, count);
+    var csi = tail(S.csi_close, count);
     var band = upper.map(function (value, index) {
       return value === null || lower[index] === null ? null : Number((value - lower[index]).toFixed(3));
     });
-    window.__chartSlices.erp = { erp: erp, ma: ma, upper: upper, lower: lower, pe: pe, y10: y10 };
+    window.__chartSlices.erp = { erp: erp, ma: ma, upper: upper, lower: lower, pe: pe, y10: y10, csi: csi };
 
     charts.erp.setOption({
       animationDuration: 650,
       animationEasing: 'cubicOut',
       grid: { left: isMobile() ? 7 : 10, right: isMobile() ? 5 : 8, top: 42, bottom: 35, containLabel: true },
       tooltip: Object.assign(tooltipStyle(), { formatter: erpTooltip }),
-      legend: legendStyle(['股债利差', '2.5年均线', '±2σ 区间']),
+      legend: legendStyle(['股债利差', '2.5年均线', '±2σ 区间', '沪深300（右轴）']),
       xAxis: categoryAxis(dates),
-      yAxis: [valueAxis('利差 %', function (value) { return Number(value).toFixed(1); })],
+      yAxis: [
+        valueAxis('利差 %', function (value) { return Number(value).toFixed(1); }),
+        valueAxis('沪深300', function (value) { return Math.round(value); }, { position: 'right', splitLine: { show: false } })
+      ],
       dataZoom: zoomInside(true),
       series: [
         {
@@ -487,6 +507,18 @@
           itemStyle: { color: COLORS.amber },
           emphasis: { focus: 'series' },
           z: 5
+        },
+        {
+          name: '沪深300（右轴）',
+          type: 'line',
+          yAxisIndex: 1,
+          data: csi,
+          showSymbol: false,
+          smooth: 0.12,
+          lineStyle: { width: 1.35, color: '#929b9e', type: 'dashed', opacity: 0.9 },
+          itemStyle: { color: '#929b9e' },
+          emphasis: { focus: 'series' },
+          z: 4
         }
       ]
     }, true);
@@ -495,7 +527,7 @@
     setText('erpCurrent', number(R.erp, 2) + '%');
     setText('erpPercentile', number(R.pct, 1) + '%');
     setText('erpZ', signed(R.z, 2) + 'σ');
-    setText('erpFootnote', '样本 ' + D.erp.meta.start + ' 至 ' + D.erp.meta.end + '，' + D.erp.meta.freq.replace('weekly', '周频') + '；均线与 ±2σ 均为 2.5 年滚动窗口。');
+    setText('erpFootnote', '样本 ' + D.erp.meta.start + ' 至 ' + D.erp.meta.end + '，' + D.erp.meta.freq.replace('weekly', '周频') + '；均线与 ±2σ 均为 2.5 年滚动窗口，沪深300采用右侧独立坐标轴。');
   }
 
   function bindRange(id, render) {
@@ -594,3 +626,4 @@
 
   loadDashboard();
 })();
+
